@@ -6,7 +6,8 @@ This repository is for the Final Project of USC CSCI596 Scientific Computing &am
 ### Step 1: Understand Vector Quantization (VQ)
 Vector Quantization is a technique used in image compression where blocks of pixels are replaced by a representative vector (codebook entry). The codebook is constructed by clustering similar vectors from the image.
 
-### Step 2: Choose a Parallelization Framework
+### Step 2: Goal &amp; Framework
+This image compression method involves Codebook design so it is time-consuming, mostly in finding the nearest code vectors and calculating vector distances. In pursuit of the project's overarching objective, our focus is on enhancing the temporal efficiency of this method through the strategic application of parallelization techniques.
 Decide whether we will use MPI, OpenMP, or a combination of both for parallelization.
 
 ### Step 3: Implementation
@@ -42,7 +43,7 @@ Measure the performance of our parallelized image compression algorithm. Compare
 Document our parallelization strategy, including the algorithms used, data structures, and parallelization frameworks. Prepare a report summarizing our findings, including performance comparisons and any challenges faced during the parallelization process.
 
 ### Step 7: Present and Discuss
-If required, present our parallelized image compression project to Professor and teaching staff. Discuss the innovation and efficiency gains achieved through parallelization.
+If required, present our parallelized image compression project to Professor and teaching staff. Discuss the innovation and efficiency gains achieved through parallelization. Based on feedback and our own evaluation, iterate on our parallelized image compression implementation to address any issues or enhance its performance further.
 
-### Step 8: Iterate and Improve
-Based on feedback and our own evaluation, iterate on our parallelized image compression implementation to address any issues or enhance its performance further.
+### Step 8: Summary
+Conclude the project by summarizing its key findings and outcomes. Additionally, provide a comprehensive summary that encapsulates the project's achievements and areas for future improvement and development.
