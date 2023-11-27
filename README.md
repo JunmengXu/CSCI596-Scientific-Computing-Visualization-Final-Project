@@ -8,8 +8,8 @@ Vector Quantization is a technique used in image compression where blocks of pix
 
 Pros:
 - Blindingly fast decompression (often faster than simply copying the uncompressed data, orders of magnitude faster than decompressing PNGs or JPEGs)
-- Good quality at excellent compression ratios (see the 2.6 bits/pixel samples below)
-- A flexible choice of the trade-off between compression ratio and fidelity (from about 2 bits/pixel all the way to about 8 bits/pixel; even at 4 bits/pixel most images look considerably better in VQ than in 8-bit simple palletization).
+- Good quality at excellent compression ratios
+- A flexible choice of the trade-off between compression ratio and fidelity
 
 Cons:
 - **Very slow compression: compressing any practical amount of art assets is definitely an overnight batch job.**
