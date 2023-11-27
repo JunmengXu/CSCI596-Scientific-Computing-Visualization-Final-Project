@@ -50,7 +50,7 @@ After clustering, update the codebook by replacing each block with the represent
 #### Step 3.5: Quantize Image
 Apply the updated codebook to quantize the entire image. Replace each block with its corresponding codebook entry.
 
-![Quantize Image]( "Quantize Image")
+![Quantize Image](https://github.com/JunmengXu/CSCI596-Scientific-Computing-Visualization-Final-Project/blob/main/Extras/encode%20image.png "Quantize Image")
 
 #### Step 3.6: Encode the Image
 Encode the quantized image, considering the indices of the codebook entries. The goal is to represent the image using a smaller number of bits.
@@ -58,7 +58,7 @@ Encode the quantized image, considering the indices of the codebook entries. The
 #### Step 3.7: Parallelize Compression Steps
 Identify which steps of the compression process can be parallelized. For example, the clustering and codebook update steps can be parallelized across multiple processors or threads. Ensure that communication and synchronization are handled correctly in a distributed environment.
 
-![Compression Flow]( "Compression Flow")
+![Compression Flow](https://github.com/JunmengXu/CSCI596-Scientific-Computing-Visualization-Final-Project/blob/main/Extras/compression%20flow.png "Compression Flow")
 
 
 ### Step 4: Optimize and Test
