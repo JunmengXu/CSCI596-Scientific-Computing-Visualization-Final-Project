@@ -15,8 +15,8 @@ double calculatePSNR(const std::string& originalFile, const std::string& compres
 }
 
 int main(int argc, char* argv[]) {
-    if (argc != 5) {
-        std::cerr << "Usage: " << argv[0] << " <input_filename> <output_filename> <M> <N>" << std::endl;
+    if (argc != 8) {
+        std::cerr << "Usage: " << argv[0] << " <input_filename> <output_filename> <M> <N> <nodes> <ntasks> <cpus_per_task>" << std::endl;
         return 1;
     }
 
@@ -24,6 +24,10 @@ int main(int argc, char* argv[]) {
     const std::string outputFilename = argv[2];
     const int M = std::stoi(argv[3]);
     const int N = std::stoi(argv[4]);
+
+    const int nodes = std::stoi(argv[5]);
+    const int ntasks = std::stoi(argv[6]);
+    const int cpus_per_task = std::stoi(argv[7]);
 
     ImageProcessor processor;
 
@@ -60,7 +64,8 @@ int main(int argc, char* argv[]) {
     csvFile << M << "," << N << "," 
             << elapsed.count() << "," 
             << compressionRatio << "," 
-            << psnr << std::endl;
+            << psnr << "," 
+            << nodes << "," << ntasks << "," << cpus_per_task << std::endl;
 
     csvFile.close();
     return 0;
