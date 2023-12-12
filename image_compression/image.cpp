@@ -459,21 +459,21 @@ public:
 };
 
 
-int main(int argc, char* argv[]) {
-    // Check if the correct number of arguments is provided
-    if (argc != 5) {
-        std::cerr << "Usage: " << argv[0] << " <input_filename> <output_filename> <M> <N>" << std::endl;
-        return 1;
-    }
+// int main(int argc, char* argv[]) {
+//     // Check if the correct number of arguments is provided
+//     if (argc != 5) {
+//         std::cerr << "Usage: " << argv[0] << " <input_filename> <output_filename> <M> <N>" << std::endl;
+//         return 1;
+//     }
 
-    // Extract parameters from command-line arguments
-    const std::string inputFilename = argv[1];
-    const std::string outputFilename = argv[2];
-    const int M = std::stoi(argv[3]);
-    const int N = std::stoi(argv[4]);
+//     // Extract parameters from command-line arguments
+//     const std::string inputFilename = argv[1];
+//     const std::string outputFilename = argv[2];
+//     const int M = std::stoi(argv[3]);
+//     const int N = std::stoi(argv[4]);
     
-    ImageProcessor processor;
-    processor.processImage(inputFilename, outputFilename, M, N);
+//     ImageProcessor processor;
+//     processor.processImage(inputFilename, outputFilename, M, N);
 
-    return 0;
-}
+//     return 0;
+// }
