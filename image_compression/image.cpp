@@ -133,10 +133,10 @@ public:
                 vectors.push_back(vector);
             }
         }
-        // Print the content of vectors
-        for (const auto& vector : vectors) {
-            std::cout << "Pixel1: " << vector.getPixel1() << " Pixel2: " << vector.getPixel2() << std::endl;
-        }
+        // // Print the content of vectors
+        // for (const auto& vector : vectors) {
+        //     std::cout << "Pixel1: " << vector.getPixel1() << " Pixel2: " << vector.getPixel2() << std::endl;
+        // }
 
         // Step 2: Initialization of codewords - select N initial codewords
         std::vector<MyVector> codewords;
