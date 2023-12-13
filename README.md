@@ -283,8 +283,12 @@ Due to conducting tests with 54 different data sets on Carc to evaluate the para
 - These analyses provide insights into how parallel algorithms perform in real-world settings and can assist decision-makers in making more informed resource allocation decisions when deploying similar algorithms.
 
 #### Influence of different images on the efficiency and quality of parallelization.:
-![Comparison2](Extras/comparison2.png){: .center}
-![Comparison2_2](Extras/comparison2_2.png){: .center}
+<p align="center">
+  <img src="Extras/comparison2.png" alt="Comparison2">
+</p>
+<p align="center">
+  <img src="Extras/comparison2_2.png" alt="Comparison2_2">
+</p>
 
 - The `Capybara` image shows the most significant reduction in compression time with a negligible change in compression ratio, indicating that parallel optimization was highly effective for this image. This suggests that images similar to the Capybara one, which likely contains large uniform regions, benefit greatly from parallel optimization in terms of speed, without sacrificing the quality of compression.
 
