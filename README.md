@@ -74,9 +74,11 @@ Steps 3.3 and 3.4 should be repeated, updating the locations of codewords and th
 #### Step 3.5: Quantize Image
 Apply the updated codebook to quantize the entire image. Replace each block with its corresponding codebook entry. Encode the quantized image, considering the indices of the codebook entries. The goal is to represent the image using a smaller number of bits.
 
-![Original Image](https://github.com/JunmengXu/CSCI596-Scientific-Computing-Visualization-Final-Project/blob/main/Extras/encode%20image.png "Original Image")
+The image below is the original image.
+![Original Image](https://github.com/JunmengXu/CSCI596-Scientific-Computing-Visualization-Final-Project/blob/main/images_samples/capybara.jpg "Original Image")
 
-![Quantize Image](https://github.com/JunmengXu/CSCI596-Scientific-Computing-Visualization-Final-Project/blob/main/Extras/encode%20image.png "Quantize Image")
+The image below is the image after compression with M=2 and N=8.
+![Quantize Image](https://github.com/JunmengXu/CSCI596-Scientific-Computing-Visualization-Final-Project/blob/main/Extras/capybaraM2N8.jpg "Quantize Image")
 
 #### Step 3.6: Parallelize Compression Steps
 Identify which steps of the compression process can be parallelized. For example, the clustering and codebook update steps can be parallelized across multiple processors or threads. Ensure that communication and synchronization are handled correctly in a distributed environment.
@@ -243,9 +245,12 @@ Given that our primary presentation medium is GitHub, we recognize the paramount
 ### Step 7: Team Member Contributions
 This section outlines the distinctive contributions made by each team member to our collaborative project. Each member has brought a unique set of skills, expertise, and dedication to the table, contributing significantly to the overall success of the initiative. The collective efforts of the team members have resulted in a comprehensive and well-executed project. Below is a summary of individual contributions:
 
-Junmeng Xu: []
+**Junmeng Xu**:
+- In this project, I spearheaded the development of the fundamental image compression program. Leveraging my expertise in C++, I crafted the core functionality that forms the backbone of our image compression solution. A pivotal aspect of my contribution was the strategic integration of OpenMP to parallelize critical components of the program, enhancing its computational efficiency.
 
-Yiyuan Gao: []
+- Half of the README file encapsulates a comprehensive summary of my contributions, outlining the intricacies of the image compression algorithm, the rationale behind parameter configurations such as 'M' and 'N,' and the optimization achieved through parallelization. This section serves as a testament to the meticulous planning, implementation, and dedication invested in ensuring the success of our image compression project.
+
+**Yiyuan Gao**: []
 
 By acknowledging and documenting the diverse contributions of each team member, we ensure that the team's collaborative efforts and individual strengths are appropriately recognized and celebrated.
 
