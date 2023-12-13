@@ -6,7 +6,7 @@ To run the code
 `g++ -o image image.cpp`
 
 - Compile it in CARC
-`g++ -o image_mpi image_mpi.cpp -fopenmp -lm -std=c++11`
+`g++ -o image_omp image_omp.cpp -fopenmp -lm -std=c++11`
 
 2. Run the following command
 
@@ -18,4 +18,4 @@ Example:
 - In CARC
 `sbatch pro.sl`
 We can also configure the program in the last line
-`./image input-filename output-filename M N`
+`./image_omp input-filename output-filename M N`

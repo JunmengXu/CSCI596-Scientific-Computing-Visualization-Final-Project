@@ -6,4 +6,4 @@
 #SBATCH --output=pro.out
 #SBATCH -Aanakano_429
 
-./image_mpi ./capybara.jpg ./output.jpg 2 8
+./image_omp ./capybara.jpg ./output.jpg 2 8
