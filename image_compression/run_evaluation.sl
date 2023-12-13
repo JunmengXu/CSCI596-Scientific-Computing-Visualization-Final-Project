@@ -31,5 +31,5 @@ for i in ${!input_files[@]}; do
     N=${N_values[$i]}
 
     # Run your program with each set of parameters
-    ./your_program $input_filename $output_filename $M $N $nodes $ntasks $cpus_per_task
+    ./evaluation $input_filename $output_filename $M $N $nodes $ntasks $cpus_per_task
 done
