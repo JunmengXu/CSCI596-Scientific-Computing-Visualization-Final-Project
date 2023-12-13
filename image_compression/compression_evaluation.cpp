@@ -1,17 +1,12 @@
 #include <iostream>
 #include <fstream>
 #include <chrono>
-#include "image.cpp"  // Assuming your compression algorithm is in this header file
+#include "image_omp.cpp"  // Assuming your compression algorithm is in this header file
 
 // Function to calculate file size
 long getFileSize(const std::string& filename) {
     std::ifstream file(filename, std::ifstream::ate | std::ifstream::binary);
     return file.tellg(); 
-}
-
-// Function to calculate PSNR (implementation needed)
-double calculatePSNR(const std::string& originalFile, const std::string& compressedFile) {
-    // Implement PSNR calculation logic here
 }
 
 int main(int argc, char* argv[]) {
@@ -44,7 +39,6 @@ int main(int argc, char* argv[]) {
     long originalSize = getFileSize(inputFilename);
     long compressedSize = getFileSize(outputFilename);
     double compressionRatio = static_cast<double>(originalSize) / compressedSize;
-    double psnr = calculatePSNR(inputFilename, outputFilename);
 
     // Open or create CSV file
     std::ofstream csvFile("compression_results.csv", std::ios::app); // Append mode
@@ -57,14 +51,14 @@ int main(int argc, char* argv[]) {
     csvFile.seekp(0, std::ios::end); // Go to the end of the file
     if (csvFile.tellp() == 0) { // File is empty
         // Write headers
-        csvFile << "M,N,CompressionTime,CompressionRatio,PSNR\n";
+        csvFile << "InputFilename,M,N,CompressionTime,CompressionRatio,Nodes,Ntasks,CpusPerTask\n";
     }
 
     // Write data to CSV file
-    csvFile << M << "," << N << "," 
+    csvFile << inputFilename << ","
+            << M << "," << N << "," 
             << elapsed.count() << "," 
             << compressionRatio << "," 
-            << psnr << "," 
             << nodes << "," << ntasks << "," << cpus_per_task << std::endl;
 
     csvFile.close();

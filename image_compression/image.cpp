@@ -1,9 +1,10 @@
-#include<iostream>
-#include<fstream>
-#include<string>
+#include <iostream> 
+#include <fstream>
+#include <string>
 #include <vector>
 #include <random>
 #include <cmath>
+#include <chrono>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -120,6 +121,8 @@ public:
 
         // Free allocated memory
         stbi_image_free(rgbData);
+
+        std::cout << "Reading image done" << std::endl;
     }
 
     void compressImage(int M, int N, int offset) {
@@ -133,16 +136,17 @@ public:
                 vectors.push_back(vector);
             }
         }
-        // // Print the content of vectors
-        // for (const auto& vector : vectors) {
-        //     std::cout << "Pixel1: " << vector.getPixel1() << " Pixel2: " << vector.getPixel2() << std::endl;
-        // }
+
+        std::cout << "step 1 finished" << std::endl;
 
         // Step 2: Initialization of codewords - select N initial codewords
         std::vector<MyVector> codewords;
         for (int i = 0; i < N; i++) {
             codewords.push_back(vectors[i]);
         }
+
+        std::cout << "step 2 finished" << std::endl;
+
 
         // Step 3: Clustering vectors around each code word
         // Step 4: Refine and Update your code words depending on outcome of 3
@@ -166,6 +170,9 @@ public:
             }
         }
 
+        std::cout << "step 3 and 4 finished" << std::endl;
+
+
         // Step 5: Quantize input vectors to produce output image
         // Initialize the global 'img' variable
         img_compressed.resize(width * height * 3, 255);
@@ -182,6 +189,8 @@ public:
                 img_compressed[(y * width + x + 1) * 3 + offset] = quantizedPixel2;
             }
         }
+
+        std::cout << "step 5 finished" << std::endl;
     }
 
     /**
@@ -444,12 +453,14 @@ public:
             std::cout << "Waiting for compressing..." << std::endl;
             for(int i=0; i<channels; i++){
                 compressImage(M, N, i);
+                std::cout << "Channels: " << i << " complete" << std::endl;
             }
         } else {
             std::cout << "Extra: M = perfect square" << std::endl;
             std::cout << "Waiting for compressing..." << std::endl;
             for(int i=0; i<channels; i++){
                 compressImageExtra(M, N, i);
+                std::cout << "Channels: " << i << " complete" << std::endl;
             }
         }
         std::cout << "Compressed done!" << std::endl;
@@ -472,8 +483,20 @@ public:
 //     const int M = std::stoi(argv[3]);
 //     const int N = std::stoi(argv[4]);
     
+//     // Start measuring time
+//     auto start_time = std::chrono::high_resolution_clock::now();
+
 //     ImageProcessor processor;
 //     processor.processImage(inputFilename, outputFilename, M, N);
+
+//     // Stop measuring time
+//     auto end_time = std::chrono::high_resolution_clock::now();
+
+//     // Calculate the duration
+//     auto duration = std::chrono::duration_cast<std::chrono::seconds>(end_time - start_time);
+
+//     // Print the duration
+//     std::cout << "Time taken by function: " << duration.count() << " seconds" << std::endl;
 
 //     return 0;
 // }

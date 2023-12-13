@@ -1,0 +1,10 @@
+InputFilename,M,N,CompressionTime,CompressionRatio
+../images_samples/capybara.jpg,4,4,483.627,0.113156
+../images_samples/capybara.jpg,4,16,822.66,0.10112
+../images_samples/capybara.jpg,16,16,3032.44,0.104453
+../images_samples/Lenna.jpg,4,4,20.1788,1.10287
+../images_samples/Lenna.jpg,4,16,55.1536,1.04001
+../images_samples/Lenna.jpg,16,16,251.715,1.15168
+../images_samples/beach.jpg,4,4,167.168,0.218712
+../images_samples/beach.jpg,4,16,296.512,0.212057
+../images_samples/beach.jpg,16,16,617.906,0.235472

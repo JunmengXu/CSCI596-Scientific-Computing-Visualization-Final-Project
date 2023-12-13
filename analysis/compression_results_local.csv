@@ -1,0 +1,10 @@
+InputFilename,M,N,CompressionTime,CompressionRatio
+./capybara.jpg,4,4,483.627,0.113156
+./capybara.jpg,4,16,822.66,0.10112
+./capybara.jpg,16,16,3032.44,0.104453
+./Lenna.jpg,4,4,20.1788,1.10287
+./Lenna.jpg,4,16,55.1536,1.04001
+./Lenna.jpg,16,16,251.715,1.15168
+./beach.jpg,4,4,167.168,0.218712
+./beach.jpg,4,16,296.512,0.212057
+./beach.jpg,16,16,617.906,0.235472
