@@ -5,6 +5,7 @@
 #include <random>
 #include <cmath>
 #include <chrono>
+#include <omp.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -96,7 +97,6 @@ class ImageProcessor {
 public:
     // Read the origianl file to produce the original image
     void originalImage(const std::string &filename) {
-
         // Load the original image using STB image
         unsigned char* rgbData = stbi_load(filename.c_str(), &width, &height, &channels, STBI_rgb);
 
@@ -107,7 +107,6 @@ public:
 
         // Initialize the global 'img' variable
         img.resize(width * height * 3, 255);
-
 
         // Set the RGB values for each pixel in the vector
         for (int y = 0; y < height; y++) {
@@ -128,19 +127,40 @@ public:
     void compressImage(int M, int N, int offset) {
         // Step 1: Understanding your two-pixel vector space to see what vectors your image contains
         std::vector<MyVector> vectors;
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x <= width - M; x++) {
-                int pixel1 = img[(y * width + x) * 3 + offset];
-                int pixel2 = img[(y * width + x + 1 ) * 3 + offset];
-                MyVector vector(pixel1, pixel2);
-                vectors.push_back(vector);
+        std::vector<MyVector> privateVectors;
+
+        #pragma omp parallel private(privateVectors) shared(vectors)
+        {
+            #pragma omp for collapse(2)
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x <= width - M; x++) {
+                    int pixel1 = img[(y * width + x) * 3 + offset];
+                    int pixel2 = img[(y * width + x + 1) * 3 + offset];
+                    MyVector vector(pixel1, pixel2);
+
+                    privateVectors.push_back(vector);
+                }
             }
+
+            #pragma omp critical
+            vectors.insert(vectors.end(), privateVectors.begin(), privateVectors.end());
         }
+        
+        // for (int y = 0; y < height; y++) {
+        //     for (int x = 0; x <= width - M; x++) {
+        //         int pixel1 = img[(y * width + x) * 3 + offset];
+        //         int pixel2 = img[(y * width + x + 1) * 3 + offset];
+        //         MyVector vector(pixel1, pixel2);
+        //         vectors.push_back(vector);
+        //     }
+        // }
 
         std::cout << "step 1 finished" << std::endl;
 
+
         // Step 2: Initialization of codewords - select N initial codewords
         std::vector<MyVector> codewords;
+
         for (int i = 0; i < N; i++) {
             codewords.push_back(vectors[i]);
         }
@@ -152,16 +172,33 @@ public:
         // Step 4: Refine and Update your code words depending on outcome of 3
         bool change = true;
         while (change) {
-            std::vector<std::vector<MyVector> > clusters(N);
-            for (const auto& vector : vectors) {
-                int nearestCodewordIndex = findNearestCodewordIndex(vector, codewords);
-                clusters[nearestCodewordIndex].push_back(vector);
+            std::vector<std::vector<MyVector>> clusters(N);
+
+            // #pragma omp parallel
+            // {
+            //     int nthreads,tid;
+            //     nthreads = omp_get_num_threads();
+            //     tid = omp_get_thread_num();
+
+            //     for (size_t i = tid; i < vectors.size(); i+=nthreads) {
+            //         int nearestCodewordIndex = findNearestCodewordIndex(vectors[i], codewords);
+            //         #pragma omp critical
+            //         clusters[nearestCodewordIndex].push_back(vectors[i]);
+            //     }
+            // }
+
+            for (size_t i = 0; i < vectors.size(); i++) {
+                int nearestCodewordIndex = findNearestCodewordIndex(vectors[i], codewords);
+                clusters[nearestCodewordIndex].push_back(vectors[i]);
             }
+
             std::vector<MyVector> newCodewords;
+
             for (int i = 0; i < N; i++) {
                 MyVector averageVector = averageVectors(clusters[i]);
                 newCodewords.push_back(averageVector);
             }
+
             if (!codewordsChange(codewords, newCodewords, N)) {
                 change = false;
                 codewords = newCodewords;
@@ -176,22 +213,31 @@ public:
         // Step 5: Quantize input vectors to produce output image
         // Initialize the global 'img' variable
         img_compressed.resize(width * height * 3, 255);
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x <= width - M; x++) {
-                int pixel1 = img[(y * width + x) * 3 + offset];
-                int pixel2 = img[(y * width + x + 1) * 3 + offset];
-                MyVector vector(pixel1, pixel2);
-                int nearestCodewordIndex = findNearestCodewordIndex(vector, codewords);
-                MyVector quantizedVector = codewords[nearestCodewordIndex];
-                int quantizedPixel1 = quantizedVector.getPixel1();
-                int quantizedPixel2 = quantizedVector.getPixel2();
-                img_compressed[(y * width + x) * 3 + offset] = quantizedPixel1;
-                img_compressed[(y * width + x + 1) * 3 + offset] = quantizedPixel2;
+
+        #pragma omp parallel
+	    {
+            int nthreads,tid;
+            nthreads = omp_get_num_threads();
+            tid = omp_get_thread_num();
+
+            for (int y = tid; y < height; y+=nthreads) {
+                for (int x = 0; x <= width - M; x++) {
+                    int pixel1 = img[(y * width + x) * 3 + offset];
+                    int pixel2 = img[(y * width + x + 1) * 3 + offset];
+                    MyVector vector(pixel1, pixel2);
+                    int nearestCodewordIndex = findNearestCodewordIndex(vector, codewords);
+                    MyVector quantizedVector = codewords[nearestCodewordIndex];
+                    int quantizedPixel1 = quantizedVector.getPixel1();
+                    int quantizedPixel2 = quantizedVector.getPixel2();
+                    img_compressed[(y * width + x) * 3 + offset] = quantizedPixel1;
+                    img_compressed[(y * width + x + 1) * 3 + offset] = quantizedPixel2;
+                }
             }
         }
 
         std::cout << "step 5 finished" << std::endl;
     }
+
 
     /**
      * Compress the image by vector quantization
@@ -203,19 +249,28 @@ public:
 		// Create list of adjacent blocks pixel vectors
         int root = static_cast<int>(std::sqrt(M));
         std::vector<MyVectorExtra> vectors;
-
-        for (int y = 0; y <= height - root; ++y) {
-            for (int x = 0; x <= width - root; ++x) {
-                std::vector<int> pixels;
-                for (int i = 0; i < root; ++i) {
-                    for (int j = 0; j < root; ++j) {
-                        pixels.push_back(img[(y * width + x + j + i * width) * 3 + offset]);
+        std::vector<MyVectorExtra> privateVectors;
+        #pragma omp parallel private(privateVectors) shared(vectors)
+        {
+            #pragma omp for collapse(2)
+            for (int y = 0; y <= height - root; ++y) {
+                for (int x = 0; x <= width - root; ++x) {
+                    std::vector<int> pixels;
+                    for (int i = 0; i < root; ++i) {
+                        for (int j = 0; j < root; ++j) {
+                            pixels.push_back(img[(y * width + x + j + i * width) * 3 + offset]);
+                        }
                     }
+                    MyVectorExtra vector(pixels);
+                    privateVectors.push_back(vector);
                 }
-                MyVectorExtra vector(pixels);
-                vectors.push_back(vector);
             }
+
+            #pragma omp critical
+            vectors.insert(vectors.end(), privateVectors.begin(), privateVectors.end());
         }
+
+        std::cout << "step 1 finished" << std::endl;
 
 
         // Step 2: Initialization of codewords - select N initial codewords
@@ -229,6 +284,9 @@ public:
             codewords.push_back(vectors[index]);
         }
 
+        std::cout << "step 2 finished" << std::endl;
+
+
         // Step 3: Clustering vectors around each code word
         // Step 4: Refine and Update your code words depending on outcome of 3
         bool change = true; // whether codewords change or the change in the codewords is small.
@@ -240,9 +298,18 @@ public:
                 clusters[i].clear();
             }
 
-            for (const MyVectorExtra& vector : vectors) {
-                int nearestCodewordIndex = findNearestCodewordIndexExtra(vector, codewords);
-                clusters[nearestCodewordIndex].push_back(vector);
+            #pragma omp parallel
+            {
+                int nthreads,tid;
+                nthreads = omp_get_num_threads();
+                tid = omp_get_thread_num();
+
+                for (size_t i = tid; i < vectors.size(); i+=nthreads) {
+                    int nearestCodewordIndex = findNearestCodewordIndexExtra(vectors[i], codewords);
+                    #pragma omp critical
+                    clusters[nearestCodewordIndex].push_back(vectors[i]);
+                }
+
             }
 
             std::vector<MyVectorExtra> newCodewords;
@@ -259,35 +326,46 @@ public:
             }
         }
 
+        std::cout << "step 3 and 4 finished" << std::endl;
+
+
         // Step 5: Quantize input vectors to produce output image
         img_compressed.resize(width * height * 3, 255);
 
-        for (int y = 0; y <= height - root; ++y) {
-            for (int x = 0; x <= width - root; ++x) {
-                std::vector<int> pixels;
-                for (int i = 0; i < root; ++i) {
-                    for (int j = 0; j < root; ++j) {
-                        pixels.push_back(img[((y + i) * width + x + j) * 3 + offset]);
+        #pragma omp parallel
+	    {
+            int nthreads,tid;
+            nthreads = omp_get_num_threads();
+            tid = omp_get_thread_num();
+
+            for (int y = tid; y <= height - root; y+=nthreads) {
+                for (int x = 0; x <= width - root; ++x) {
+                    std::vector<int> pixels;
+                    for (int i = 0; i < root; ++i) {
+                        for (int j = 0; j < root; ++j) {
+                            pixels.push_back(img[((y + i) * width + x + j) * 3 + offset]);
+                        }
                     }
-                }
 
-                MyVectorExtra vector(pixels);
-                int nearestCodewordIndex = findNearestCodewordIndexExtra(vector, codewords);
-                MyVectorExtra quantizedVector = codewords[nearestCodewordIndex];
-                std::vector<int> quantizedPixels = quantizedVector.getPixels();
+                    MyVectorExtra vector(pixels);
+                    int nearestCodewordIndex = findNearestCodewordIndexExtra(vector, codewords);
+                    MyVectorExtra quantizedVector = codewords[nearestCodewordIndex];
+                    std::vector<int> quantizedPixels = quantizedVector.getPixels();
 
-                int index = 0;
-                for (int i = 0; i < root; ++i) {
-                    for (int j = 0; j < root; ++j) {
-                        int quantizedPixel = quantizedPixels[index];
-                        index++;
-                        int outputIndex = ((y + i) * width + x + j) * 3 + offset;
-                        img_compressed[outputIndex] = quantizedPixel;
+                    int index = 0;
+                    for (int i = 0; i < root; ++i) {
+                        for (int j = 0; j < root; ++j) {
+                            int quantizedPixel = quantizedPixels[index];
+                            index++;
+                            int outputIndex = ((y + i) * width + x + j) * 3 + offset;
+                            img_compressed[outputIndex] = quantizedPixel;
+                        }
                     }
                 }
             }
         }
 
+        std::cout << "step 5 finished" << std::endl;
     }
 
     int findNearestCodewordIndex(const MyVector& vector, const std::vector<MyVector>& codewords) {
@@ -482,7 +560,8 @@ int main(int argc, char* argv[]) {
     const std::string outputFilename = argv[2];
     const int M = std::stoi(argv[3]);
     const int N = std::stoi(argv[4]);
-    
+
+
     // Start measuring time
     auto start_time = std::chrono::high_resolution_clock::now();
 
@@ -497,6 +576,7 @@ int main(int argc, char* argv[]) {
 
     // Print the duration
     std::cout << "Time taken by function: " << duration.count() << " seconds" << std::endl;
+
 
     return 0;
 }
